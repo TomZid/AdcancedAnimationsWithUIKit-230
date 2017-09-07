@@ -12,6 +12,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var circle: UIView!
     var animator: UIViewPropertyAnimator!
+    var isLhs = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,21 +25,25 @@ class ViewController: UIViewController {
     }
 
     @IBAction func handlePan(recognizer: UIPanGestureRecognizer) {
+
+        let translation = recognizer.translation(in: circle)
+        let dx: CGFloat = self.isLhs ? 90.0 : -90.0
+
         switch recognizer.state {
         case .began:
-            animator = UIViewPropertyAnimator(duration: 1, curve: .easeOut, animations: { 
-                self.circle.frame = self.circle.frame.offsetBy(dx: 100, dy: 0);
+            animator = UIViewPropertyAnimator(duration: 1, curve: .easeOut, animations: {
+                self.circle.frame = self.circle.frame.offsetBy(dx: dx, dy: 0);
             })
             animator .pauseAnimation()
         case .changed:
-            let translation = recognizer.translation(in: circle)
-            animator.fractionComplete = translation.x / 100
+            animator.fractionComplete = translation.x / dx
+
         case .ended:
             animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
+            self.isLhs = !self.isLhs
         default:
             NSLog("end")
         }
     }
 
 }
-
